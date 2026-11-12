@@ -28,12 +28,24 @@ trees_raw, taxon_map = read_nexus_trees(test_tree_file, parse_taxon_map=True, bu
 # stacked ranges case
 # trees = trees[26:27]
 
-from brokilon.ccd.domain.sranges.pruning_outlier_trees import prune_outlier_trees
+from brokilon.ccd.domain.sranges.pruning_outlier_trees import report_outlier_trees, prune_outlier_trees
+
 # todo still doesn't remove the thing we did not want, need to do more work
-adjusted_k = int(0.05 * len(trees_raw))  # flagging clades that are in less than 5 percent of trees
+adjusted_k = int(0.03 * len(trees_raw))  # flagging clades that are in less than 5 percent of trees
 pruned_trees = prune_outlier_trees(trees_raw, taxon_map, k=adjusted_k)
 
-print(f"Looking at {len(pruned_trees)} trees.")
+report_outlier_trees(
+    trees_raw,
+    taxon_map,
+    out_path=f"outlier_report_{adjusted_k}k.html",
+    k=adjusted_k,
+    z_cutoff=1.0
+)
+#
+# import sys
+# sys.exit("stopped")
+
+# print(f"Looking at {len(pruned_trees)} trees.")
 from brokilon.ccd.domain.sranges import sranges
 
 # import sys
