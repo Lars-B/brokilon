@@ -3,6 +3,7 @@
 import sys
 
 import click
+from fontTools.designspaceLib import tagForAxisName
 
 from brokilon.ccd.cli.common_options import common_options
 from brokilon.ccd.domain.sranges import sranges
@@ -62,10 +63,16 @@ def main(trees_file, ccd_type, burn_in, output_file, verbose, debug):
         branch_length_map
     )
 
+    # apply the taxon map to the tree
+    reverse_taxon_map = {v: k for k, v in taxon_map.items()}
+    for l in map_tree:
+        new_name = reverse_taxon_map[l.name]
+        l.name = new_name
+
     nwk_map = map_tree.write(
         format=1,
         format_root_node=True,
-        features=["orientation", "ancestral_range"],
+        features=["orientation", "range"],
         icytree_order=True,
     )
 
@@ -79,7 +86,7 @@ def main(trees_file, ccd_type, burn_in, output_file, verbose, debug):
                     break
                 output.write(line)
 
-        output.write(f"tree sranges_MAP = {nwk_map};\nEnd;\n")
+        output.write(f"tree sranges_MAP = {nwk_map}\nEnd;\n")
 
     if verbose:
         print("Done invoking stratigraphic-range CLI.", file=sys.stderr)

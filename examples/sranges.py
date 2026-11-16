@@ -82,7 +82,7 @@ seen_resolved, map_tree = sranges.get_sranges_map_tree(
 nwk_map = map_tree.write(
     format=1,
     format_root_node=True,
-    features=["orientation", "ancestral_range"],
+    features=["orientation", "range"],
     icytree_order=True
 )
 print(nwk_map)

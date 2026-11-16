@@ -694,7 +694,13 @@ def get_sranges_map_tree(
         sranges_set,
         branch_length_map
     )
-    #
+
+    # Renaming ancestral_range attribute to fit with other tree output
+    for node in map_tree.traverse():
+        if hasattr(node, "ancestral_range"):
+            node.add_feature("range", node.ancestral_range)
+            node.del_feature("ancestral_range")
+
     return seen_resolved_clades, map_tree
 
 
@@ -1016,7 +1022,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                             # this case we are adding a leaf that has a range on top
                             start_range_parent = parent_node.add_child(
                                 name=f"internal_{icount}",
-                                dist=10 if DEBUG_TREE else 11,  # branch will be pruned later on
+                                dist=10.1 if DEBUG_TREE else 11,  # branch will be pruned later on
                             )
                             start_range_parent.add_feature("orientation", orientation)
 
@@ -1088,7 +1094,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                         # this is extra node to be removed later?
                         start_range_parent = parent_node.add_child(
                             name=f"internal_{icount}",
-                            dist=10 if DEBUG_TREE else 11,
+                            dist=10.2 if DEBUG_TREE else 11,
                         )
                         start_range_parent.add_feature("orientation", orientation)
 
@@ -1155,11 +1161,12 @@ def get_sranges_tree_from_seen_resolved_clades(
 
                     else:
                         leaf_dist = _get_distance(clade, fall_back=1)
-                        label = label.replace('_first', '_last')
+                        if label in sranges_set:
+                            label = label.replace('_first', '_last')
 
                         leaf = parent_node.add_child(
                             name=label,
-                            dist=10 if DEBUG_TREE else leaf_dist,
+                            dist=10.3 if DEBUG_TREE else leaf_dist,
                         )
 
                         leaf.add_feature("orientation", orientation)
@@ -1343,6 +1350,9 @@ def get_sranges_tree_from_seen_resolved_clades(
         out_tree,
         seen_resolved_clades[root_clade][1]
     )
+    if DEBUG_TREE:
+        # For debugging this pruning makes no sense since the branch lengths are different
+        return out_tree
     pruned_out = _prune_sranges_edges(out_tree)
     return pruned_out
     # return pruned_out
