@@ -63,11 +63,15 @@ def main(trees_file, ccd_type, burn_in, output_file, verbose, debug):
         branch_length_map
     )
 
-    # apply the taxon map to the tree
+    # apply the taxon map to leaves and name internal nodes i_0, i_1, ...
     reverse_taxon_map = {v: k for k, v in taxon_map.items()}
-    for l in map_tree:
-        new_name = reverse_taxon_map[l.name]
-        l.name = new_name
+    i = 0
+    for node in map_tree.traverse("preorder"):
+        if node.is_leaf():
+            node.name = reverse_taxon_map[node.name]
+        else:
+            node.name = f"i_{i}"
+            i += 1
 
     nwk_map = map_tree.write(
         format=1,
