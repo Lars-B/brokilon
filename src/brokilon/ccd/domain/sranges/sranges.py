@@ -877,7 +877,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                                 dist=1.145 if DEBUG_TREE else 13,
                             )
                             leaf.add_feature("orientation", "ancestor")
-                            leaf.add_feature("ancestral_range", label)
+                            leaf.add_feature("ancestral_range", label.replace("_first", ""))
 
                         else:
 
@@ -918,7 +918,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                                 dist=1.34 if DEBUG_TREE else range_end_leaf_dist,
                             )
                             leaf.add_feature("orientation", "ancestor")
-                            leaf.add_feature("ancestral_range", label)
+                            leaf.add_feature("ancestral_range", label.replace("_first", ""))
 
                         else:
                             leaf_dist = _get_distance(clade, fall_back=1)
@@ -953,7 +953,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                                 dist=1.12 if DEBUG_TREE else range_end_dist,
                             )
                             leaf.add_feature("orientation", "ancestor")
-                            leaf.add_feature("ancestral_range", label)
+                            leaf.add_feature("ancestral_range", label.replace("_first", ""))
 
                         else:
                             leaf_dist = _get_distance(clade, fall_back=1)
@@ -1005,7 +1005,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                                     dist=1.986 if DEBUG_TREE else leaf_range_end_leaf_dist,
                                 )
                                 leaf.add_feature("orientation", "ancestor")
-                                leaf.add_feature("ancestral_range", label)
+                                leaf.add_feature("ancestral_range", label.replace("_first", ""))
 
                             else:
                                 leaf_dist = _get_distance(clade, fall_back=1)
@@ -1079,7 +1079,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                                     dist=1.986 if DEBUG_TREE else leaf_range_dist,
                                 )
                                 leaf.add_feature("orientation", "ancestor")
-                                leaf.add_feature("ancestral_range", label)
+                                leaf.add_feature("ancestral_range", label.replace("_first", ""))
 
                             else:
                                 leaf_dist = _get_distance(clade, fall_back=1)
@@ -1157,7 +1157,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                             dist=4.24 if DEBUG_TREE else leaf_range_end_dist,
                         )
                         leaf_range_end.add_feature("orientation", "ancestor")
-                        leaf_range_end.add_feature("ancestral_range", label)
+                        leaf_range_end.add_feature("ancestral_range", label.replace("_first", ""))
 
                     else:
                         leaf_dist = _get_distance(clade, fall_back=1)
@@ -1213,15 +1213,12 @@ def get_sranges_tree_from_seen_resolved_clades(
                             name=f"internal_extra_{icount}",
                             dist=3 if DEBUG_TREE else intermediate_node_dist,
                         )
-                        if hasattr(clade, 'ancestral_range'):
+                        if hasattr(clade, "ancestral_range"):
                             extra_internal_node.add_feature(
-                                'ancestral_range',
+                                "ancestral_range",
                                 clade.ancestral_range
                             )
-                        extra_internal_node.add_feature(
-                            'orientation',
-                            "ancestor"
-                        )
+                        extra_internal_node.add_feature("orientation", "ancestor")
 
                         cur_dist = _get_distance(clade, fall_back=1)
                         internal_node = extra_internal_node.add_child(
@@ -1229,7 +1226,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                             dist=23 if DEBUG_TREE else cur_dist,
                         )
                         assert clade.ancestral_range in clade.clade, "Should not happen"
-                        internal_node.add_feature('ancestral_range', clade.ancestral_range)
+                        internal_node.add_feature("ancestral_range", clade.ancestral_range)
                         internal_node.add_feature("orientation", "descendant")
 
                     else:
@@ -1304,6 +1301,9 @@ def get_sranges_tree_from_seen_resolved_clades(
                                     name=clade.ancestral_range,
                                     dist=0.144 if DEBUG_TREE else 0,
                                 )
+
+                                # assert orientation == "ancestor", "Sampled ancestor should be anc?"
+
                                 sampled_ancestor_leaf.add_feature(
                                     'orientation',
                                     orientation
