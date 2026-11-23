@@ -9,7 +9,7 @@ from pathlib import Path
 #                   f"/examples/data/sranges_toy_posterior.trees")
 
 test_tree_file = (f"{Path(__file__).parent.absolute().parent}"
-                  f"/examples/data/srfbd_last.trees")
+                  f"/examples/data/srfbd_last_20_no9.trees")
 
 # test_tree_file = (f"{Path(__file__).parent.absolute().parent}"
 #                   f"/examples/data/rep_3_srfbd_first_ucln.trees")
@@ -30,17 +30,18 @@ trees_raw, taxon_map = read_nexus_trees(test_tree_file, parse_taxon_map=True, bu
 
 from brokilon.ccd.domain.sranges.pruning_outlier_trees import report_outlier_trees, prune_outlier_trees
 
+pruned_trees = trees_raw
 # todo still doesn't remove the thing we did not want, need to do more work
-adjusted_k = int(0.03 * len(trees_raw))  # flagging clades that are in less than 5 percent of trees
-pruned_trees = prune_outlier_trees(trees_raw, taxon_map, k=adjusted_k)
-
-report_outlier_trees(
-    trees_raw,
-    taxon_map,
-    out_path=f"outlier_report_{adjusted_k}k.html",
-    k=adjusted_k,
-    z_cutoff=1.0
-)
+# adjusted_k = int(0.03 * len(trees_raw))  # flagging clades that are in less than 5 percent of trees
+# pruned_trees = prune_outlier_trees(trees_raw, taxon_map, k=adjusted_k)
+#
+# report_outlier_trees(
+#     trees_raw,
+#     taxon_map,
+#     out_path=f"outlier_report_{adjusted_k}k.html",
+#     k=adjusted_k,
+#     z_cutoff=1.0
+# )
 #
 # import sys
 # sys.exit("stopped")
@@ -70,6 +71,7 @@ clade_counts, clade_split_counts, sranges_set, branch_length_map = sranges.get_s
 #     print(double_counted)
 #     raise ValueError("double counting branch lengths...")
 
+sranges.DEBUG_TREE = False
 
 reverse_taxon_map = {value: key for key, value in taxon_map.items()}
 seen_resolved, map_tree = sranges.get_sranges_map_tree(

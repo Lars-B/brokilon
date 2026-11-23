@@ -961,7 +961,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                                 name=label,
                                 dist=1.784 if DEBUG_TREE else leaf_dist,
                             )
-                            leaf.add_feature("orientation", "descendant")
+                            leaf.add_feature("orientation", orientation)
 
                 elif (
                         clade.ancestral_range
@@ -1096,7 +1096,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                             name=f"internal_{icount}",
                             dist=10.2 if DEBUG_TREE else 11,
                         )
-                        start_range_parent.add_feature("orientation", orientation)
+                        start_range_parent.add_feature("orientation", parent_node.orientation)
 
                         range_start_leaf = start_range_parent.add_child(
                             name=label,
@@ -1187,16 +1187,17 @@ def get_sranges_tree_from_seen_resolved_clades(
                             name=f"internal_{icount}",
                             dist=6 if DEBUG_TREE else 11,
                         )
+                        # This is a node of degree 2, reuse parent orientation
                         start_range_parent.add_feature(
-                            'orientation',
-                            orientation
+                            'orientation', parent_node.orientation
                         )
 
                         start_range_leaf = start_range_parent.add_child(
                             name=clade.ancestral_range,
                             dist=0.123 if DEBUG_TREE else 0,
                         )
-                        start_range_leaf.add_feature('orientation', "ancestor")
+                        # Setting the SA to be a descendant
+                        start_range_leaf.add_feature('orientation', "descendant")
 
                         # This node corresponds to a clade that is supressed/ implied by the split
                         # therefore it is not anywhere else, but we need to make it to recover
@@ -1227,7 +1228,7 @@ def get_sranges_tree_from_seen_resolved_clades(
                         )
                         assert clade.ancestral_range in clade.clade, "Should not happen"
                         internal_node.add_feature("ancestral_range", clade.ancestral_range)
-                        internal_node.add_feature("orientation", "descendant")
+                        internal_node.add_feature("orientation", orientation)
 
                     else:
                         if (
@@ -1306,7 +1307,9 @@ def get_sranges_tree_from_seen_resolved_clades(
 
                                 sampled_ancestor_leaf.add_feature(
                                     'orientation',
-                                    orientation
+                                    # Fixing SA cases to be descendants, below is ancestor
+                                    # This is for nicely drawing the tree
+                                    "descendant"
                                 )
 
                                 post_sa_dist = _get_distance(clade, fall_back=1)
@@ -1315,7 +1318,8 @@ def get_sranges_tree_from_seen_resolved_clades(
                                     dist=4.5 if DEBUG_TREE else post_sa_dist,
                                 )
 
-                                internal_node.add_feature('orientation', "descendant")
+                                # See above comment for orientation
+                                internal_node.add_feature('orientation', "ancestor")
 
                 else:
                     internal_node_dist = _get_distance(clade, fall_back=1)
@@ -1323,7 +1327,6 @@ def get_sranges_tree_from_seen_resolved_clades(
                         name=f"internal_{icount}",
                         dist=7 if DEBUG_TREE else internal_node_dist,
                     )
-
                     internal_node.add_feature("orientation", orientation)
                     if getattr(clade, "ancestral_range", None) in clade.clade:
                         internal_node.add_feature("ancestral_range", clade.ancestral_range)
